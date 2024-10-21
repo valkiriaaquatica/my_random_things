@@ -1,0 +1,42 @@
+- name: Configure Simple Grafana as code with Ansible
+  hosts: localhost
+  gather_facts: false 
+  tasks:
+    - name: Create a Folder in Grafana with Ansible Collection
+      grafana.grafana.folder:
+        title: youtube_folder
+        uid: youtube_folder
+        overwrite: true
+        state: present
+        grafana_url: "{{ lookup('env', 'GRAFANA_URL') }}"
+        grafana_api_key: "{{ lookup('env', 'GRAFANA_TOKEN') }}"
+      tags: ansible-caasc
+
+    - name: Create a dashboard with Ansible Collection
+      grafana.grafana.dashboard:
+        dashboard: "{{ lookup('ansible.builtin.file', './ansible_templates/dashboard.json') }}"
+        grafana_url: "{{ lookup('env', 'GRAFANA_URL') }}"
+        grafana_api_key: "{{ lookup('env', 'GRAFANA_TOKEN') }}"
+        state: present
+      tags: ansible-caasc
+
+  ############## in case u want to test with grizlly the templates in the playbook ##############
+  ## grizzly is made to automatically search in the enviroment vars for GRAFANA_URL and GRAFANA_TOKEN
+    - name: Create dashboard with Grizzly
+      ansible.builtin.command: 
+        cmd: grr apply ./yaml_templates/dashboard.yaml
+      tags: grizzly_yaml
+
+
+    - name: Create simple json from Jsonnet and apply with Grizzly
+      ansible.builtin.shell: |
+        jsonnet ./jsonnet_templates/dashboard_simple.jsonnet > ./jsonnet_templates/dashboard_simple.json
+        grr apply ./jsonnet_templates/dashboard_simple.json
+      tags: grizzly_jsonnet_simple
+
+
+    - name: Create complex json from Jsonnet and apply with Grizzly
+      ansible.builtin.shell: |
+        jsonnet ./jsonnet_templates/dashboard_complex.jsonnet > ./jsonnet_templates/dashboard_complex.json
+        grr apply ./jsonnet_templates/dashboard_complex.json
+      tags: grizzly_jsonnet_complex
