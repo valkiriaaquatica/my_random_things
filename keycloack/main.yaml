@@ -1,0 +1,144 @@
+- name: Configure Keycloack with Ansible
+  hosts: localhost
+  gather_facts: false
+  vars:
+    keyacloack_url: https://your_keycloack_endpoint.com
+    auth_username_keycloack: keyclacok_username
+    auth_password_keycloack: admikeyclacok_password
+    client_id: admin-cli
+    new_relm_name: test-caasc-ansible
+  tasks: 
+
+    - name: Create Relm for application who DONT have a default login (ex typical apps like Prometheus, Longhorn, ALertmanager...)
+      community.general.keycloak_realm:
+        auth_client_id: "{{ client_id }}"
+        auth_keycloak_url: "{{ keyacloack_url }}"
+        auth_username: "{{ auth_username_keycloack }}"
+        auth_password: "{{ auth_password_keycloack }}"
+        id: "{{ new_relm_name }}"
+        realm:  "{{ new_relm_name }}"
+        auth_realm: master
+        state: present
+        enabled: true
+      tags: caasc, oauth
+
+
+    - name: Create Oauth2 proxy client that will protect the apps
+      community.general.keycloak_client:
+        auth_keycloak_url: "{{ keyacloack_url }}"
+        auth_realm: master
+        realm: "{{ new_relm_name }}"
+        auth_username: "{{ auth_username_keycloack }}"
+        auth_password: "{{ auth_password_keycloack }}"
+        client_id: oauth2-proxy-ansible
+        name: oauth2-proxy-ansible
+        description: "Proxy used for SSO created with Ansible"
+        client_authenticator_type: client-secret
+        direct_access_grants_enabled: false
+        public_client: false
+        enabled: true
+        redirect_uris: 
+          - https://your_oauth2_proxy_endpoint/oauth2/callback
+        standard_flow_enabled: true
+        consent_required: true
+        state: present
+        protocol: openid-connect
+        protocol_mappers:
+          - config:
+              access.token.claim: true
+              id.token.claim: true
+              included.client.audience: oauth2-proxy-ansible
+              included.custom.audience: ""
+              introspection.token.claim: false
+              lightweight.claim: false
+            name: audience-oauth2-proxy-ansible
+            protocol: openid-connect
+            protocolMapper: oidc-audience-mapper
+      tags: caasc, oauth
+
+
+    - name: Create a user user1
+      community.general.keycloak_user:
+        auth_keycloak_url: "{{ keyacloack_url }}"
+        auth_realm: master
+        auth_username: "{{ auth_username_keycloack }}"
+        auth_password: "{{ auth_password_keycloack }}"
+        realm: "{{ new_relm_name }}"
+        username: user
+        firstName: user
+        lastName: user
+        email: user@gmail.com
+        enabled: true
+        emailVerified: false
+        state: present
+        credentials:
+            - type: password
+              value: user
+              temporary: false
+      tags: caasc, user
+
+
+
+    - name: Create integration with LDAP
+      community.general.keycloak_user_federation:
+        auth_keycloak_url: "{{ keyacloack_url }}"
+        auth_username: "{{ auth_username_keycloack }}"
+        auth_password: "{{ auth_password_keycloack }}"
+        auth_realm: master
+        realm: "{{ new_relm_name }}"
+        name: "lldap"
+        provider_id: ldap
+        provider_type: "org.keycloak.storage.UserStorageProvider"
+        config:
+          enabled: true
+          vendor: other
+          connectionUrl: "lldap-service-ednpoint" # intern acces, can be also public fi exposed as LB for example
+          startTls: "false"
+          useTruststoreSpi: "always"
+          connectionPooling: "false"
+          authType: "simple"
+          bindDn: "uid=admin,ou=people,dc=homelab,dc=es"
+          bindCredential: "secret-password"  
+          editMode: "WRITABLE"
+          usersDn: "ou=people,dc=homelab,dc=es"
+          usernameLDAPAttribute: "uid"
+          rdnLDAPAttribute: "uid"
+          uuidLDAPAttribute: "entryUUID"
+          userObjectClasses: "inetOrgPerson,posixAccount"
+          customUserSearchFilter: ""
+          searchScope: "2"  
+          pagination: "false"
+          importEnabled: "true"
+          syncRegistrations: "true"  
+          batchSizeForSync: "100"
+          fullSyncPeriod: "86400"
+          changedSyncPeriod: "-1"
+          allowKerberosAuthentication: "false"
+          useKerberosForPasswordAuthentication: "false"
+          cachePolicy: "DEFAULT"
+          usePasswordModifyExtendedOp: "false"
+          validatePasswordPolicy: "false"
+          trustEmail: "false"
+        mappers:
+          - name: "mapper-lldap-groups"
+            providerId: "group-ldap-mapper"
+            providerType: "org.keycloak.storage.ldap-namespace.mappers.LDAPStorageMapper"
+            config:
+              membership.attribute.type: DN
+              mode: LDAP_ONLY
+              user.roles.retrieve.strategy: LOAD_GROUPS_BY_MEMBER_ATTRIBUTE
+              groups.dn: ou=groups,dc=homelab,dc=es
+              group.name.ldap.attribute: cn
+              group.object.classes: groupOfNames
+              preserve.group.inheritance: true 
+              ignore.missing.groups: false 
+              membership.ldap.attribute: member
+              membership.user.ldap.attribute: member
+              groups.ldap.filter: ""
+              memberof.ldap.attribute: memberOf
+              mapped.group.attributes: ""
+              drop.non.existing.groups.during.sync: false 
+              groups.path: /
+        remove_unspecified_mappers: false 
+        state: "present"
+      tags: ldap
