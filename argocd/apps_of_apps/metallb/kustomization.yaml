@@ -5,6 +5,7 @@ namespace: metallb-system
 resources:
   - ./resources/advertissment.yaml
   - ./resources/ipaddresspool.yaml
+  - ./resources/ipaddresspool_2.yaml
 
 helmGlobals:
   chartHome: .

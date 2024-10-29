@@ -8,15 +8,21 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/valkiriaaquatica/my_random_things.git
-    path: argocd/apps_of_apps/metallb
+    repoURL: git@github.com:valkiriaaquatica/argocd_apps.git
+    path: test_k3s/apps_of_apps/metallb
     targetRevision: main
   destination:
     namespace: metallb-system
     name: test-k3s-context
   syncPolicy:
-    automated: {}
+    # automated: {} # comment 4 the video
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
       - ApplyOutOfSyncOnly=true
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: bgppeers.metallb.io
+      jsonPointers:
+        - /spec/conversion/webhook/clientConfig/caBundle
