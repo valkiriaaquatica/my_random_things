@@ -16,11 +16,11 @@ spec:
         - name: installCRDs
           value: 'true'
   destination:
+    # server: https://rke2-ha.homelab.com:6443
     namespace: cert-manager
     name: test-k3s-context
   syncPolicy:
-    automated: {}
+    automated: {}  # let like this if u want to authomatic sync
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      - ApplyOutOfSyncOnly=true

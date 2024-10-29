@@ -19,8 +19,7 @@ spec:
     namespace: external-secrets
     name: test-k3s-context
   syncPolicy:
-    automated: {}
+    automated: {} # let like this if u want to authomatic sync
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-      - ApplyOutOfSyncOnly=true
