@@ -1,0 +1,48 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US
+  keyboard:
+    layout: es
+    # in case you dont have DHCP do this, make sure this values are THE SAME that in the boot_command autoinstall
+  # network:
+  #   version: 2
+  #   ethernets:
+  #     ens18:
+  #       # mtu: 1450 # this is becase the VXLAN adds 50 to eh network
+  #       dhcp4: false
+  #       addresses:
+  #         - 192.168.1.88/24
+  #       gateway4: 192.168.1.1
+  #       nameservers:
+  #         addresses:
+  #           - 192.168.1.1 # this is the DNS
+  ssh:
+    install-server: true
+    allow-pw: true
+    disable_root: true
+    ssh_quiet_keygen: true
+    allow_public_ssh_keys: true
+  packages:  # necesarry for auto-provisioning of packer, do not add in .pkr.hcl file 
+            # do not remove this
+    - qemu-guest-agent
+    - sudo
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  user-data:
+    package_upgrade: false
+    timezone: Europe/Madrid
+    users:
+      - name: youtube
+        groups: [adm, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL 
+        shell: /bin/bash
+        passwd: "$6$jKKhHooTqxUBnlZW$3a2s5BKQup0Cw7u/Hpk9LL4FEXQxu0Pe9vTP.HCNKmxnfPtFACRSoRgPLghFXT3BnRvwx7RPaGioHvQd5Cwww." # execute mkpasswd --method=SHA-512
+        # ssh_key created or gsc ssh-keygen -t rsa -b 4096 -C "email@emaildomain.com"
+        #ssh_authorized_keys:
+         # - " "
+
