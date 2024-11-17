@@ -1,0 +1,17 @@
+
+---
+- name: Role to create the template
+  hosts: all # this is all because that way I can set fact variables between roles
+  gather_facts: false
+  become: false # we enter with root
+  roles:
+    - template_creation
+
+- name: Role to configure the template
+  hosts: container
+  gather_facts: false
+  become: false # we enter with root
+  roles:
+    - template_preparation
+
+

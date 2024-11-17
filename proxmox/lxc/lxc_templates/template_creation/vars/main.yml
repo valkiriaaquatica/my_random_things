@@ -1,0 +1,9 @@
+---
+# vars file for template_creation
+admin_user_value: admin_user@pve
+pve_value: "pve2"
+vmid: 217
+container_ip: "172.16.1.87"
+gw_value: "172.16.1.1"
+dns_value: "172.16.1.7"
+net_value: "vnet0"

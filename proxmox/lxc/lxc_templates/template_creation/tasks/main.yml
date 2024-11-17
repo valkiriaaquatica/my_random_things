@@ -1,0 +1,79 @@
+- name: Load vault credentials into playbook
+  include_vars:
+    file: "{{ role_path }}/vars/credentials.yaml"
+  no_log: true # if not all creds will be shown in log
+  
+- name: Create LXC container in '{{ node }}'
+  community.general.proxmox:
+    api_user: "{{ admin_user_value }}"
+    api_password: "{{ admin_user_password }}"
+    api_host: "{{ ansible_host }}"
+    node: "{{ pve_value }}"
+    validate_certs: false
+    vmid: "{{ vmid }}"
+    hostname: "lxc-ansible"
+    ostemplate: "nas-homelab-synology:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+    storage: "hdd"
+    memory: 512
+    cores: 1
+    netif:
+      net0: "name=eth0,bridge={{ net_value }},gw={{ gw_value }},ip={{ container_ip }}/24,mtu=1450"
+    nameserver: "{{ dns_value }}"
+    password: "{{ password_value }}"
+    state: present
+  run_once: true
+  delegate_to: localhost
+
+- name: Start container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    api_user: "{{ admin_user_value }}"
+    api_password: "{{ admin_user_password }}"
+    api_host: "{{ ansible_host }}"
+    node: "{{ pve_value }}"
+    state: started
+    timeout: 20
+  run_once: true
+  delegate_to: localhost
+
+- name: Copy authorized keys to '{{ node }}' node
+  copy:
+    src: "{{ role_path }}/files/authorized_keys"
+    dest: /tmp/authorized_keys
+    mode: '0600'
+  when: inventory_hostname == pve_value
+
+- name: Create ssh directory inside the container through '{{ node }}'
+  command: pct exec {{ vmid }} -- mkdir -p /root/.ssh
+  when: inventory_hostname == pve_value
+
+- name: Push the authorized_keys to container from '{{ node }}'
+  command: pct push {{ vmid }} /tmp/authorized_keys /root/.ssh/authorized_keys
+  when: inventory_hostname == pve_value
+
+- name: Ensure premissions 
+  command: pct exec {{ vmid }} -- chmod 600 /root/.ssh/authorized_keys
+  when: inventory_hostname == pve_value
+
+- name: Ensure direcotry permisions
+  command: pct exec {{ vmid }} -- chmod 700 /root/.ssh
+  when: inventory_hostname == pve_value
+
+- name: Delete authorized keys from {{ node }}
+  file:
+    path: /tmp/authorized_keys
+    state: absent
+  when: inventory_hostname == pve_value
+
+# this variables are then accessed from the template_preparation role
+- name: Set facts variable used for the template_preparation role
+  set_fact:
+    vmid: "{{ vmid }}"
+    pve_value: "{{ pve_value }}"
+    admin_user_password: "{{ admin_user_password }}"
+    api_host: "{{ ansible_host }}"
+    admin_user_value: "{{ admin_user_value }}"
+    pve_value: "{{ pve_value }}"
+  # no_log: true
+  run_once: true 
+  delegate_to: localhost

@@ -1,0 +1,74 @@
+---
+# tasks file for template_preparation
+- name: Update packages
+  apt:
+    update_cache: yes
+
+# - name: Actualizar paquetes instalados
+#   apt:
+#     upgrade: dist
+#     autoremove: yes
+
+- name: Install basic packages
+  apt:
+    name: "{{ packages_to_install }}"
+    state: present
+
+- name: Create user {{ user_name }}
+  user:
+    name: "{{ user_name }}"
+    state: present
+    groups: sudo
+    shell: /bin/bash
+    password: "{{ user_password }}"
+
+- name: Crete ssh directory for  {{ user_name }}
+  file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+
+- name: Copy authorized keys for user {{ user_name }}
+  copy:
+    content: "{{ ssh_public_key }}"
+    dest: "/home/{{ user_name }}/.ssh/authorized_keys"
+    mode: '0600'
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+
+- name: Make sure ssh is enabled
+  systemd:
+    name: ssh
+    enabled: true
+    state: started
+
+- name: Restart ssh service
+  systemd:
+    name: ssh
+    state: restarted
+
+- name: Stop container
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    api_user: "{{ admin_user_value }}"
+    api_password: "{{ admin_user_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ pve_value }}"
+    state: stopped
+    timeout: 20
+  run_once: true
+  delegate_to: localhost
+
+- name: Make template from conatiner
+  community.general.proxmox:
+    vmid: "{{ vmid }}"
+    api_user: "{{ admin_user_value }}"
+    api_password: "{{ admin_user_password }}"
+    api_host: "{{ api_host }}"
+    node: "{{ pve_value }}"
+    state: template
+    timeout: 20
+  run_once: true
+  delegate_to: localhost

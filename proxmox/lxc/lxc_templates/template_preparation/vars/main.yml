@@ -1,0 +1,15 @@
+---
+# vars file for template_preparation
+# Usuario
+user_name: user_random
+user_password: "{{ 'password123' | password_hash('sha512') }}"
+ssh_public_key: "{{ lookup('file', '{{ role_path }}/files/authorized_keys') }}"
+
+# Paquetería a instalar
+packages_to_install:
+  - nmap
+  - traceroute
+  - curl
+  - wget
+  - git
+  - htop
