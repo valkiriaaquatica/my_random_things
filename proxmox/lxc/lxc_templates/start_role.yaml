@@ -1,7 +1,7 @@
 
 ---
 - name: Role to create the template
-  hosts: all # this is all because that way I can set fact variables between roles
+  hosts: pve,lxc
   gather_facts: false
   become: false # we enter with root
   roles:

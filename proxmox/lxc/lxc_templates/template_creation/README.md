@@ -36,7 +36,7 @@ This role requires the `community.general.proxmox` module for interacting with t
 
 ```yaml
 - name: Create and start LXC container
-  hosts: all
+  hosts: pve,lxc
   gather_facts: false
   roles:
     - template_creation
@@ -51,7 +51,7 @@ This role requires the `community.general.proxmox` module for interacting with t
 
 ## Inventory
 
-The inventory should include Proxmox nodes (because is where commands are executed). It is important to use hosts: all because that way the role template_preparation can accesses the variables that are make in the set_fact. (for the Ansible fanatics, yes I can use hostvars but is easier this way hehe with small inventories)
+The inventory should include Proxmox nodes (because is where commands are executed). It is important to use hosts: pve node name + lxc because that way the set fact of the lxc host will have the variables
 
 ```ini
 [proxmox_nodes]

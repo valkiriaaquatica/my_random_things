@@ -22,7 +22,7 @@ lxc ansible_host=X.X.X.X ansible_ssh_extra_args="-o StrictHostKeyChecking=no -o 
 ```
 ---
 - name: Role to create the template
-  hosts: proxmox_nodes
+  hosts: pve,lxc # place the node name of your inventory
   gather_facts: false
   become: false
 
