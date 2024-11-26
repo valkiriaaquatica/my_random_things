@@ -1,5 +1,5 @@
 - name: This is a test playbook 
-  host: localhost 
+  hosts: localhost 
   gather_facts: false 
   tasks:
     - name: We all love Kanye West
