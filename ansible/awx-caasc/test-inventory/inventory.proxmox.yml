@@ -1,0 +1,19 @@
+plugin: community.general.proxmox
+validate_certs: no
+want_proxmox_nodes: no
+want_facts: true
+keyed_groups:
+  - key: proxmox_tags_parsed # make easier groups
+    separator: "-"
+    prefix: group
+
+compose:
+  ansible_host: >-  # this is to get the LXC containers host well
+    (
+      proxmox_ipconfig0.ip | default(proxmox_net0.ip) | default(
+        proxmox_lxc_interfaces
+        | selectattr('name', 'equalto', 'eth0') 
+        | map(attribute='inet')
+        | first
+      )
+    ) | ansible.utils.ipaddr('address')
