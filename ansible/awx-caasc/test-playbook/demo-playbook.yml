@@ -1,0 +1,7 @@
+- name: This is a test playbook 
+  host: localhost 
+  gather_facts: false 
+  tasks:
+    - name: We all love Kanye West
+      debug:  
+        msg: "Beny JR is also too good though"
