@@ -1,0 +1,6 @@
+---
+proxmox_vars:
+  - name: Proxmox Homelab
+    description: "This is a dynamic inventory for Proxmox"
+    state: present
+    org: Default

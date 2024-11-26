@@ -1,0 +1,23 @@
+- name: bring in projects variables
+  include_vars:
+    file: projects_vars.yaml
+  run_once: true
+
+- name: Add project
+  awx.awx.project:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    organization: "{{ item.organization }}"
+    state: present
+    default_environment: "{{ item.default_environment }}"
+    scm_type: "{{ item.scm_type }}"
+    scm_branch: "{{ item.scm_branch }}"
+    scm_url: "{{ item.scm_url }}"
+    # credential: "{{ item.credential }}"  # in casse yo have 
+  loop: "{{ projects_var }}"
+
+- name: Update GitHub AAP project to get the fresh data for others tasks
+  awx.awx.project_update:
+    project: "{{ item.name }}"
+  loop: "{{ projects_var }}"
+  when: item.state == "present"

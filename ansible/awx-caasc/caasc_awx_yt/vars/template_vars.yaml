@@ -1,0 +1,12 @@
+job_templates_vars:
+  - name: "AWX CAASC"
+    description: "This playbooks executes the CAASC role for AWX"
+    job_type: "run"
+    organization: "Default"
+    inventory: "Demo Inventory"
+    project: "GitHub Youtube Repo"
+    playbook: "ansible/awx-caasc/test-playbook/demo-playbook.yml"
+    state: "present"
+    execution_environment: 1
+    # credential: "credential_name"  # if 
+    verbosity: 2

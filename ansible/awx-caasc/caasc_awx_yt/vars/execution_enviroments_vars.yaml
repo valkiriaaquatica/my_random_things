@@ -1,0 +1,11 @@
+ee:
+  - name: "EE Latest -1"
+    image: "quay.io/ansible/awx-ee:24.6.0"
+    organization: Default
+    description: "This image is n-1 from the latest EE image"
+    # credential: ""  # in case you image is in a private repo as ecr, harbor, docker...
+    pull: "missing"
+
+
+
+

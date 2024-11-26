@@ -1,0 +1,14 @@
+- name: Charge execution enviroemtns sources variables
+  include_vars:
+    file: execution_enviroments_vars.yaml
+  run_once: true
+
+- name: Add new execution enviroemnt
+  awx.awx.execution_environment:
+    name: "{{ item.name }}"
+    image: "{{ item.image }}"
+    organization: "{{ item.organization }}"
+    description: "{{ item.description }}"
+    # credential: "{{ item.credential }}"
+    pull: "{{ item.pull }}"
+  loop: "{{ ee }}"

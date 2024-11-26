@@ -1,0 +1,26 @@
+---
+
+- name: Include credential types tasks 
+  include_tasks: credential_types.yaml
+
+- name: Include credentials tasks
+  include_tasks: credentials.yaml
+
+- name: Include projects tasks # this needs the credentials above so and this will fail
+  include_tasks: projects.yaml
+
+- name: Include template tasks
+  include_tasks: templates.yaml
+
+- name: Include execution enviroment tasks
+  include_tasks: execution_enviroments.yaml
+
+- name: Include inventory tasks
+  include_tasks: inventories.yaml
+
+- name: Include inventory tasks
+  include_tasks: inventories_sources.yaml
+
+- name: Include Settings (LDAP) tasks
+  include_tasks: settings_ldap.yaml  
+

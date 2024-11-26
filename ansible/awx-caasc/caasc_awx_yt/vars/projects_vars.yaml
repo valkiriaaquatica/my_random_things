@@ -1,0 +1,11 @@
+---
+projects_var:
+  - name: "GitHub Youtube Repo"
+    description: "Public repo for Youtue demostrations in Default Organization"
+    organization: "Default"
+    state: present
+    default_environment: "1"
+    scm_type: git
+    # credential: "" # in case u want, the credential name, it has to be created, blank if you prefer writing it on IU
+    scm_branch: "main"
+    scm_url: "https://github.com/valkiriaaquatica/my_random_things.git"

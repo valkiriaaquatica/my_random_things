@@ -1,0 +1,36 @@
+controller_oauthtoken: k9YZOJR9vrMiZEnH5bN7C6lLnIEKCU
+controller_host: https://awx.homelab.com/
+
+ldap_server_uri: "ldap://openldap-external.openldap.svc.cluster.local"
+ldap_bind_dn: "cn=admin,dc=homelab,dc=es"
+ldap_bind_password: "secret_pass"
+ldap_user_dn_template: "uid=%(user)s,ou=Users,dc=homelab,dc=es"
+ldap_group_type: "PosixGroupType"
+ldap_require_group: null 
+ldap_deny_group: null 
+ldap_start_tls: false
+
+ldap_user_search_ou: "ou=People,dc=homelab,dc=com"
+ldap_user_search_filter: "(uid=%(user)s)"
+
+ldap_group_search_ou: "ou=Groups,dc=homelab,dc=es"
+ldap_group_search_filter: "(objectClass=posixGroup)"
+
+ldap_user_attr_map:
+  email: "mail"
+  first_name: "givenName"
+  last_name: "sn"
+
+ldap_group_type_params:
+  name_attr: "cn"
+
+ldap_user_flags_by_group:
+  is_superuser:
+    - "cn=admins,ou=groups,dc=homelab,dc=es"
+
+ldap_organization_map:
+  Default:
+    admins:
+      - "cn=admins,ou=groups,dc=homelab,dc=es"
+
+ldap_team_map: {}

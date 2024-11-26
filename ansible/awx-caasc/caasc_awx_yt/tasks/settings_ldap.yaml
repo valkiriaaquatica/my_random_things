@@ -1,0 +1,46 @@
+---
+- name: Bring LDAP variables
+  include_vars:
+    file: ldap_config_vars.yaml
+  run_once: true
+
+- name: Configure using uri module LDAP setting in AWX
+  ansible.builtin.uri:
+    url: "{{ controller_host }}/api/v2/settings/ldap/"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ controller_oauthtoken }}"
+      Content-Type: "application/json"
+    body_format: json
+    body: >
+      {
+        "AUTH_LDAP_SERVER_URI": "{{ ldap_server_uri }}",
+        "AUTH_LDAP_BIND_DN": "{{ ldap_bind_dn }}",
+        "AUTH_LDAP_BIND_PASSWORD": "{{ ldap_bind_password }}",
+        "AUTH_LDAP_USER_DN_TEMPLATE": "{{ ldap_user_dn_template }}",
+        "AUTH_LDAP_GROUP_TYPE": "{{ ldap_group_type }}",
+        "AUTH_LDAP_REQUIRE_GROUP": "{{ ldap_require_group }}",
+        "AUTH_LDAP_DENY_GROUP": "{{ ldap_deny_group }}",
+        "AUTH_LDAP_START_TLS": {{ ldap_start_tls | lower }},
+        "AUTH_LDAP_USER_SEARCH": [
+          "{{ ldap_user_search_ou }}",
+          "SCOPE_SUBTREE",
+          "{{ ldap_user_search_filter }}"
+        ],
+        "AUTH_LDAP_GROUP_SEARCH": [
+          "{{ ldap_group_search_ou }}",
+          "SCOPE_SUBTREE",
+          "{{ ldap_group_search_filter }}"
+        ],
+        "AUTH_LDAP_USER_ATTR_MAP": {{ ldap_user_attr_map | to_json }},
+        "AUTH_LDAP_GROUP_TYPE_PARAMS": {{ ldap_group_type_params | to_json }},
+        "AUTH_LDAP_USER_FLAGS_BY_GROUP": {{ ldap_user_flags_by_group | to_json }},
+        "AUTH_LDAP_ORGANIZATION_MAP": {{ ldap_organization_map | to_json }},
+        "AUTH_LDAP_TEAM_MAP": {{ ldap_team_map | to_json }}
+      }
+    validate_certs: false
+  register: ldap_settings_result
+
+- name: Mostrar resultado de la configuración
+  debug:
+    var: ldap_settings_result

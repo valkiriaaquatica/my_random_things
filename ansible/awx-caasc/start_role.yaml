@@ -1,0 +1,6 @@
+---
+- name: Configurate AWX as code
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - caasc_awx_yt

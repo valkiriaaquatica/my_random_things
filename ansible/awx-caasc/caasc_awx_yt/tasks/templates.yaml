@@ -1,0 +1,18 @@
+  - name: Bring job templates variables
+    include_vars:
+      file: template_vars.yaml
+    run_once: true
+
+  - name: Add job templates
+    awx.awx.job_template:
+      name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      organization: "{{ item.organization }}"
+      state: "{{ item.state }}"
+      inventory: "{{ item.inventory }}"
+      project: "{{ item.project }}"
+      playbook: "{{ item.playbook }}"
+      execution_environment: "{{ item.execution_environment }}"
+      verbosity: "{{ item.verbosity }}"
+      # credential: "{{ item.credential }}" # in case your
+    loop: "{{ job_templates_vars }}"

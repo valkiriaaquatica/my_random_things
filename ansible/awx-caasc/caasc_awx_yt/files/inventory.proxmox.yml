@@ -1,0 +1,14 @@
+plugin: community.general.proxmox
+# url: https://proxmox-homelab.homelab.com:8006
+validate_certs: no
+# user: "{{ user }}"
+# password: "{{ password }}"
+want_proxmox_nodes: yes
+want_facts: true
+keyed_groups:
+  - key: proxmox_tags_parsed # ejemplo group_dns
+    separator: "-"
+    prefix: group
+  
+compose:
+  ansible_host: proxmox_agent_interfaces[1]["ip-addresses"][0].split('/')[0]

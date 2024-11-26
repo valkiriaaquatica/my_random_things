@@ -1,0 +1,20 @@
+- name: This a test playbook
+  hosts: localhost
+  gather_facts: false
+  tasks:  
+      - name: Sludar
+        debug:
+          msg: "{{ awx_url }} {{ awx_user }} {{ awx_password }}"
+
+      - name: Create new application
+        awx.awx.application:
+          controller_host: "{{ awx_url }}" # internal svc as http://awx-demo-service.awx.svc.cluster.local
+          controller_username: "{{ awx_user }}"
+          controller_password: "{{ awx_password }}"
+          name: "TestApp"
+          description: "This is the App description"
+          organization: "Default"
+          state: present
+          authorization_grant_type: "password"
+          client_type: "confidential"
+        # loop: "{{ applications_var }}"

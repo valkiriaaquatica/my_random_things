@@ -1,0 +1,13 @@
+- name: Bring inveotires variables
+  include_vars:
+    file: inventories_vars.yaml
+  run_once: true
+
+- name: Crete new inventory
+  awx.awx.inventory:
+    name: "{{ item.name }}"
+    organization: "{{ item.org }}"
+    state: "{{ item.state }}"
+    description: "{{ item.description }}"
+  loop: "{{ proxmox_vars }}"
+

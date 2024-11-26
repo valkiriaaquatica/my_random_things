@@ -1,0 +1,10 @@
+proxmox_inventory_vars:
+  - name: Proxmox
+    inventory: Proxmox Homelab # name of the inventory created in the step before, cna also be the ID
+    source: scm
+    source_project: "GitHub Youtube Repo"
+    source_path: "ansible/awx-caasc/test-inventory/inventory.proxmox.yml"
+    overwrite: true
+    credential: "Proxmox credentials"
+    execution_environment: "1"
+    state: present
