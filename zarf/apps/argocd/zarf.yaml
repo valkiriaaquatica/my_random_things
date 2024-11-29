@@ -1,0 +1,22 @@
+kind: ZarfPackageConfig
+metadata:
+  name: argocd
+  description: Argocd deployed with zarf
+
+components:
+  - name: argocd-helm-chart
+    required: true
+    charts:
+      - name: argo-cd
+        version: 7.7.5
+        namespace: argocd
+        url: https://argoproj.github.io/argo-helm
+        releaseName: argocd-zarf
+        valuesFiles:
+          - argo-cd/values.yaml
+    images:
+      ## argocd
+      - public.ecr.aws/docker/library/redis:7.4.1-alpine
+      - quay.io/argoproj/argocd:v2.13.1
+
+
