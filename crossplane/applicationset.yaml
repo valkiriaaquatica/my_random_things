@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: helm-applications
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: infra-crossplane
+            namespace: infra-crossplane
+            chartPath: crossplane/infra-crossplane
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/valkiriaaquatica/my_random_things.git
+        targetRevision: main
+        path: '{{chartPath}}'
+      destination:
+        name: in-cluster
+        namespace: '{{namespace}}'
+      syncPolicy: 
+        # automated:
+        #   prune: true
+        #   selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true

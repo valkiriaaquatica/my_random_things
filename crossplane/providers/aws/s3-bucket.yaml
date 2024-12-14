@@ -1,0 +1,19 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: crossplane-bucket-test-0
+spec:
+  forProvider:
+    region: eu-west-1
+  providerConfigRef:
+    name: default
+# --- 
+# apiVersion: s3.aws.upbound.io/v1beta1
+# kind: Bucket
+# metadata:
+#   name: crossplane-bucket-test-1
+# spec:
+#   forProvider:
+#     region: eu-west-1
+#   providerConfigRef:
+#     name: default

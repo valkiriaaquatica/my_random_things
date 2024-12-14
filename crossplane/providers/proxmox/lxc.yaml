@@ -1,0 +1,25 @@
+apiVersion: lxc.proxmoxve.upbound.io/v1alpha1
+kind: Lxc
+metadata:
+  name: lxc-crossplane-0
+spec:
+  forProvider:
+    targetNode: pve2
+    clone: "217"
+    cloneStorage: hdd
+    vmid: 135
+    hostname: lxc-crossplane-0
+    passwordSecretRef:
+      name: container-root-password   
+      namespace: default             
+      key: root-password             
+    full: true
+    start: true
+    cores: 1
+    memory: 512
+    network:
+      - name: eth0
+        bridge: vmbr0
+        ip: dhcp
+  providerConfigRef:
+    name: proxmoxve-config
