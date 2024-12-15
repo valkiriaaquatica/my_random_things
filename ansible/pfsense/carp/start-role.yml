@@ -1,0 +1,6 @@
+- name: config pfsense caasc  
+  hosts: pfsense-main-server,pfsense-backup-server
+  become: false 
+  gather_facts: false 
+  roles: 
+    - pfsense-caasc-carp

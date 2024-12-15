@@ -1,0 +1,126 @@
+---
+# tasks file for pfsense-caasc-carp
+################################ BEFORE EXECUTING MAKE THIS IN ENVIROMETN VARIABLE -> export ANSIBLE_JINJA2_NATIVE=True   ##############
+################################ CHECK THIS https://stackoverflow.com/questions/52487396/pass-integer-variable-to-task-without-losing-the-integer-type  ##########
+- name: Configure interfaces on master-pfsense
+  loop: "{{ interfaces_master }}"
+  pfsensible.core.pfsense_interface:
+    descr: "{{ item.name }}"
+    interface: "{{ item.interface }}"
+    enable: True
+    state: "{{ state_infra }}"
+    ipv4_type: static
+    ipv4_address: "{{ item.ip_address }}"
+    mtu: "{{ item.mtu_value }}" # just if you use VXLAN  o VLAN with adjunt Max MTU which is my case 
+  when: inventory_hostname == "pfsense-main-server"
+  tags: interfaces
+  
+- name: Configure interfaces on backup-pfsense
+  loop: "{{ interfaces_backup }}"
+  pfsensible.core.pfsense_interface:
+    descr: "{{ item.name }}"
+    interface: "{{ item.interface }}"
+    enable: True
+    state: "{{ state_infra }}"
+    ipv4_type: static
+    ipv4_address: "{{ item.ip_address }}"
+    mtu: "{{ item.mtu_value }}" # just if you use VXLAN  o VLAN with adjunt Max MTU which is my case 
+  when: inventory_hostname == "pfsense-backup-server"
+  tags: interfaces
+  
+  # security rules for SYNC and LAN interfaces
+- name: Allow XMLRPC synchronization traffic on SYNC interface
+  pfsensible.core.pfsense_rule:
+    name: "Allow XMLRPC traffic on SYNC"
+    action: pass
+    interface: "SYNC"
+    ipprotocol: inet
+    protocol: tcp
+    source: any
+    destination: any
+    destination_port: 443
+    state: "{{ state_infra }}"
+  tags: rules
+
+- name: Block all other traffic on SYNC interface
+  pfsensible.core.pfsense_rule:
+    name: "Block all other traffic on SYNC"
+    action: block
+    interface: "SYNC"
+    ipprotocol: inet
+    protocol: any
+    source: any
+    destination: any
+    state: "{{ state_infra }}"
+  tags: rules
+
+- name: Allow traffic on LAN interface without restrictions
+  pfsensible.core.pfsense_rule:
+    name: "Allow all traffic in LAN"
+    action: pass
+    interface: "LAN"
+    ipprotocol: inet
+    protocol: any
+    source: any
+    destination: "any"
+    state: "{{ state_infra }}"
+  tags: rules
+
+  # now, until it is develop, we create the high vaialibilty config in the MASTER router
+  # In the MASTER routers: 
+    # - Synchronize Interface -> SYNC 
+    # Synchronize Config to IP -> ip from SYNC interface of te other router (172.16.50.3)
+
+  # now is turn for virtual IPs , we using the uri ansible module BUT we are developing these new modules haha
+  # after executing, fo to the IU and click on apply
+- name: Create Virtual IP via API
+  uri:
+    url: "https://{{ pfsense_master_ip }}/api/v2/firewall/virtual_ip"
+    method: POST
+    user: "admin"
+    password: "your_pfsense_password"
+    force_basic_auth: yes
+    validate_certs: no
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      mode: "carp"
+      interface: "{{ item.interface }}"
+      type: "single"
+      subnet: "{{ item.subnet }}"
+      subnet_bits: "{{ item.subnet_bits }}"
+      descr: "{{ item.descr }}"
+      vhid: "{{ item.vhid }}"
+      password: "{{ carp_password }}"
+      advbase: "{{ item.advbase }}"
+      advskew: "{{ item.advskew }}"
+  delegate_to: localhost
+  run_once: true 
+  loop: "{{ virtual_ips }}"
+  tags: virtual_ip
+
+# in IU change the confing to Hybrid Outbound
+- name: Add outbound to WAN_CARP
+  pfsensible.core.pfsense_nat_outbound:
+    descr: 'NAT outbound traffic to WAN_CARP_IP'
+    interface: "{{ wan_interface }}"
+    source: "{{ source_outbound }}"
+    destination: any
+    address: "{{ address_outbound }}"
+    state: "{{ state_infra }}"
+  when: inventory_hostname == "pfsense-main-server"
+  tags: outbound
+
+# configure DHCP server, the plugin still needs to be approve the pr, see: https://github.com/pfsensible/core/pull/140/files
+# so until it is approved and merge into new version you need to download it and add to your collection
+- name: Configure DHCP server on master pfsense and on LAN interface
+  pfsensible.core.pfsense_dhcp_server:
+    interface: "{{ interface_dhcp_lan }}"
+    enable: true
+    range_from: "{{ dhcp_range_from }}"
+    range_to: "{{ dhcp_range_to }}"
+    gateway: "{{ gateway_dhcp }}"
+    failover_peerip: "{{ failover_peerip_dhcp }}"
+  when: inventory_hostname == "pfsense-main-server"
+  tags: dhcp

@@ -1,0 +1,55 @@
+---
+# vars file for pfsense-caasc-carp
+pfsense_master_ip: 192.168.1.220
+state_infra: present
+
+# interfaces 
+interfaces_master:
+  - name: LAN
+    interface: vtnet1
+    ip_address: 10.10.10.2
+    mtu_value: 1450
+  - name: SYNC
+    interface: vtnet2
+    ip_address: 172.16.50.2
+    mtu_value: 1450
+
+interfaces_backup:
+  - name: LAN
+    interface: vtnet1
+    ip_address: 10.10.10.3
+    mtu_value: 1450
+  - name: SYNC
+    interface: vtnet2
+    ip_address: 172.16.50.3
+    mtu_value: 1450
+
+# virtual IP
+carp_password: "your_car_password"
+virtual_ips:
+  - interface: "wan"
+    subnet: "192.168.1.33"
+    subnet_bits: 24
+    descr: "WAN_CARP_IP"
+    vhid: 1
+    advbase: 1
+    advskew: 0
+  - interface: "lan" # this will change in the plugin, this is the same as LAN
+    subnet: "10.10.10.1"
+    subnet_bits: 24
+    descr: "LAN_CARP_IP"
+    vhid: 2
+    advbase: 1
+    advskew: 0
+
+# outbound
+wan_interface: "wan"
+source_outbound: "192.168.1.0/24"
+address_outbound: "192.168.1.33" # this is the WAN_CARP_IP define above in the subnet variable
+
+# DHCP 
+interface_dhcp_lan: lan
+dhcp_range_from: 10.10.10.10
+dhcp_range_to: 10.10.10.100
+gateway_dhcp: "10.10.10.1" # this is the LAN_CARP_IP define above in the subnet variable
+failover_peerip_dhcp: "10.10.10.3" # this is the IP in the LAN of the backup router
