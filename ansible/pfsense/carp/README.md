@@ -6,6 +6,9 @@ This Ansible role configures a High Availability (HA) setup for pfSense, includi
 
 ## VERY IMPORTAT: high availability and virtual ip modules are STILL in dvelopment. In the future the role will include them and it will be easier
 
+## BASIC DIAGRAM
+![alt text](image.png)
+
 ## Requirements
 
 - `pfsensible.core` collection must be installed.
