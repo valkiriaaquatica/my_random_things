@@ -1,0 +1,21 @@
+deployment1:
+  enabled: true
+  name: deployment1
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: "1.21.6"
+    pullPolicy: IfNotPresent
+  labels:
+    app: deployment1
+
+deployment2:
+  enabled: true
+  name: deployment2
+  replicaCount: 2
+  image:
+    repository: busybox
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  labels:
+    app: deployment2

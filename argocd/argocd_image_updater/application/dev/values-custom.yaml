@@ -1,0 +1,25 @@
+deployment1:
+  enabled: true
+  name: deployment1
+  replicaCount: 1
+  image:
+    repository: core.harbor.domain/test/test-app
+    tag: "0.0.1"
+    pullPolicy: IfNotPresent
+  labels:
+    app: deployment1
+  imagePullSecrets:
+    - name: harbor-credentials
+
+deployment2:
+  enabled: true
+  name: deployment2
+  replicaCount: 2
+  image:
+    repository: core.harbor.domain/test/test-app2
+    tag: "0.0.1"
+    pullPolicy: IfNotPresent
+  labels:
+    app: deployment2
+  imagePullSecrets:
+    - name: harbor-credentials

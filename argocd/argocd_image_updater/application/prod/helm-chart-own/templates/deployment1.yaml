@@ -1,0 +1,24 @@
+{{- if .Values.deployment1.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment1.name }}
+  labels:
+    app: {{ .Values.deployment1.labels.app }}
+spec:
+  replicas: {{ .Values.deployment1.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment1.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment1.labels.app }}
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.deployment1.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: {{ .Values.deployment1.name }}
+          image: "{{ .Values.deployment1.image.repository }}:{{ .Values.deployment1.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment1.image.pullPolicy }}
+{{- end }}

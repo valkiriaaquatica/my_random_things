@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: testapp-dev
+helmGlobals:
+  chartHome: .
+helmCharts:
+- name: helm-chart-own # helm chart folder name
+  releaseName: testapp-dev
+  namespace: testapp-dev
+  valuesFile: ./values-custom.yaml
+images:
+- name: core.harbor.domain/test/test-app
+  newTag: 0.0.1
+- name: core.harbor.domain/test/test-app2
+  newTag: 0.0.2
