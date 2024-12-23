@@ -1,6 +1,11 @@
 # Preparing Argo CD Image Updater with Harbor and Gitea (No SSL)
 ## IF YOU DONT use a private ando not ssl harbor registry and gitea repository, skip 1,2,3 and 6.
 
+# WITHOUD ARGOCD IMAGE UDPATER :(
+![alt text](image.png)
+
+# WITH ARGOCD IMAGE UPDATER :)
+![alt text](image-1.png)
 
 ## **1. Create Secrets**
 ### **Applicationnamespaces for the two enamespaces**
