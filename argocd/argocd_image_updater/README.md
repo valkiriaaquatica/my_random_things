@@ -61,8 +61,8 @@ Edit your `daemon.json` file:
 
 ## **4. Build and Push an Image**
 ```bash
-docker build -t core.harbor.domain/test/test-app:alfa .
-docker push core.harbor.domain/test/test-app:alfa
+docker build -t core.harbor.domain/test/test-app:0.0.1 .
+docker push core.harbor.domain/test/test-app:0.0.1
 ```
 
 ---
