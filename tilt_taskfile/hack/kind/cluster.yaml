@@ -1,0 +1,15 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 5000
+        hostPort: 5000
+        protocol: TCP
+  # in case you havean insecure registry that want to pull images from
+# containerdConfigPatches:
+#   - |
+#     [plugins."io.containerd.grpc.v1.cri".registry.mirrors."your.registry.domain"]
+#       endpoint = ["https://your.registry.domain"]
+#     [plugins."io.containerd.grpc.v1.cri".registry.configs."core.harbor.domain".tls]
+#       insecure_skip_verify = true 

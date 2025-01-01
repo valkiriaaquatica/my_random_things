@@ -1,0 +1,11 @@
+docker_build(
+    "ghcr.io/valkiriaaquatica/tilt_taskfile",
+    ".",
+    live_update=[
+        sync(".", "/app"),  # inside the image where files are 
+        run("pip install -r requirements.txt", trigger=["requirements.txt"]),
+    ]
+)
+
+k8s_yaml(listdir("./k8s"))
+k8s_resource("tilt-own-image", port_forwards=5001)  # this is the service name

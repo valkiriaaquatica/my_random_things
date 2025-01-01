@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tilt-own-image
+  labels:
+    app: tilt-own-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tilt-own-image
+  template:
+    metadata:
+      labels:
+        app: tilt-own-image
+    spec:
+      containers:
+      - name: tilt-own-image
+        imagePullPolicy: IfNotPresent
+        image: ghcr.io/valkiriaaquatica/tilt_taskfile:0.0.1
+        ports:
+        - containerPort: 5000
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tilt-own-image
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: tilt-own-image
