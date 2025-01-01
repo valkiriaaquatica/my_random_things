@@ -2,30 +2,28 @@ version: '3'
 
 tasks:
   default:
-    desc: "Ejecutar todas las tareas en orden"
+    desc: "Eexcute all tasks in order (no delete cluster)"
     cmds:
       - task create_cluster
       - task apply_kubernetes
       - task deploy_tilt
   create_cluster:
-    desc: "Crear un cluster de Kubernetes"
+    desc: "Create Kind cluster"
     cmds:
       - kind create cluster  --config hack/kind/cluster.yaml 
   apply_kubernetes: 
-    desc: "Aplicar los recursos de Kubernetes"
+    desc: "Apply kubernetes resources"
     cmds:
       - kubectl apply -f k8s/
   deploy_tilt:
-    desc: "Desplegar Tilt"
+    desc: "Dpeploy Tilt"
     cmds:
       - tilt up
   run_tests:
-    desc: "Ejecutar tests de la aplicación Flask"
+    desc: "Execute Flask tests"
     cmds:
       - python3 -m unittest test_app.py
   delete_cluster:
-    desc: "Eliminar el cluster de Kubernetes"
+    desc: "Delete Kind cluster"
     cmds:
       - kind delete cluster
-
-  # add tests or things to do after the deployment
