@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   default:
-    desc: "Just creates the cluster, nothing else"
+    desc: "Eexcute all tasks in order (no delete cluster)"
     cmds:
       - task create_cluster
   create_cluster:

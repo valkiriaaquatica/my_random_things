@@ -12,7 +12,7 @@ The project will consist of three core microservices:
 ![alt text](image.png)
 
 ## Prerequisites
-- **Tools**: Go, Docker, Helm, Kind, Tilt, kubectl.
+- **Tools**: Go, Docker, Helm, Kind, Tilt, kubectl, Task.
 - **Environment**: Basic knowledge of Kubernetes, Docker, and microservics.
 
 ### How to run it
@@ -20,6 +20,7 @@ All is run on default namespace
 ```bash
 git clone https://github.com/valkiriaaquatica/my_random_things.git
 cd my_random_things/microservices_development/easy_example_dates
+task
 tilt up
 ```
 Now check http://localhost:10350/ and Tilt will show up.
