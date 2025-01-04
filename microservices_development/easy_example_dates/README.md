@@ -8,6 +8,9 @@ The project will consist of three core microservices:
 3. **Kafka**: as message queu with pub/sub
 3. **Postgres**: to store data
 
+## Easy Diagram
+![alt text](image.png)
+
 ## Prerequisites
 - **Tools**: Go, Docker, Helm, Kind, Tilt, kubectl.
 - **Environment**: Basic knowledge of Kubernetes, Docker, and microservics.
