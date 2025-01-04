@@ -1,0 +1,64 @@
+load('ext://restart_process', 'docker_build_with_restart')
+
+####################################################### user-svc #######################################################
+compile_cmd_user_svc = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o user-svc/build/user-svc user-svc/cmd/main.go'
+local_resource(
+    'user-svc-compile',
+    compile_cmd_user_svc,
+    deps=['./user-svc/cmd/main.go']
+)
+
+docker_build_with_restart(
+    "user-svc-image",
+    ".",
+    entrypoint=["/app/build/user-svc"],  
+    dockerfile='./user-svc/Dockerfile',
+    only=[
+        './user-svc/build', 
+        './user-svc/static',
+    ],
+    live_update=[
+        sync("./user-svc/build", "/app/build"),
+    ],
+    
+)
+
+####################################################### notifications-svc #######################################################
+compile_cmd_notifications_svc = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o notifications-svc/build/notifications-svc notifications-svc/cmd/main.go'
+local_resource(
+    'notifications-svc-compile',
+    compile_cmd_notifications_svc,
+    deps=['./notifications-svc/cmd/main.go']
+)
+
+docker_build_with_restart(   
+    "notifications-svc-image",
+    ".",
+    entrypoint=["/app/build/notifications-svc"],  
+    dockerfile='./notifications-svc/Dockerfile',
+    only=[
+        './notifications-svc/build', 
+    ],
+    live_update=[
+        sync("./notifications-svc/build", "/app/build"),
+    ],
+)
+
+####################################################### general resources #######################################################
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+helm_repo('strimzi', 'https://strimzi.io/charts/')
+helm_resource('strimzi-kafka-operator', 'strimzi/strimzi-kafka-operator', resource_deps=['bitnami'])
+
+k8s_yaml([
+    'k8s/database.yaml',
+    'k8s/user-svc.yml',
+    'k8s/kafka_resources.yaml',
+    'k8s/notifications-svc.yaml',
+])
+k8s_resource(
+    "user-svc",
+    port_forwards=8080,
+    resource_deps=['user-svc-compile'], # this dependency will ensure that the user-svc-compile resource is built before this resource is applied
+)
+
+k8s_resource('postgres', port_forwards=5432) # this port-forward in your localhost 5432 port the database

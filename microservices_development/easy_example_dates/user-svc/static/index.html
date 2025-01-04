@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User & Appointment Management</title>
+</head>
+<body>
+    <h1>User & Appointment Management</h1>
+
+    <h2>Create User</h2>
+    <form id="createUserForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Create User</button>
+    </form>
+
+    <h2>Users</h2>
+    <button id="fetchUsers">Fetch Users</button>
+    <ul id="userList"></ul>
+
+    <h2>Create Appointment</h2>
+    <form id="createAppointmentForm">
+        <label for="userId">User ID:</label>
+        <input type="number" id="userId" name="userId" required><br><br>
+        <label for="appointmentDate">Appointment Date:</label>
+        <input type="datetime-local" id="appointmentDate" name="appointmentDate" required><br><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea><br><br>
+        <button type="submit">Create Appointment</button>
+    </form>
+
+    <h2>Appointments by User</h2>
+    <label for="fetchAppointmentsUserId">User ID:</label>
+    <input type="number" id="fetchAppointmentsUserId">
+    <button id="fetchAppointments">Fetch Appointments</button>
+    <ul id="appointmentList"></ul>
+
+    <script>
+        // this is the tilt port forwarded 
+        // see main function of main.go user-svc
+        const userApiUrl = "http://localhost:8080/users";
+        const appointmentApiUrl = "http://localhost:8080/appointments";
+
+        document.getElementById("createUserForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(userApiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    alert("User created successfully!");
+                } else {
+                    alert("Failed to create user.");
+                }
+            } catch (error) {
+                console.error("Error creating user:", error);
+            }
+        });
+
+        document.getElementById("fetchUsers").addEventListener("click", async () => {
+            try {
+                const response = await fetch(userApiUrl);
+                const users = await response.json();
+                const userList = document.getElementById("userList");
+                userList.innerHTML = "";
+
+                users.forEach((user) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${user.name} (${user.email}) - Created at: ${user.created_at}`;
+                    userList.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        });
+
+        document.getElementById("createAppointmentForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.appointmentDate = new Date(data.appointmentDate).toISOString();
+
+            try {
+                const response = await fetch(appointmentApiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    alert("Appointment created successfully!");
+                } else {
+                    alert("Failed to create appointment.");
+                    console.error("Failed to create appointment:", response.statusText);
+                }
+            } catch (error) {
+                console.error("Error creating appointment:", error);
+            }
+        });
+
+
+        document.getElementById("fetchAppointments").addEventListener("click", async () => {
+            const userId = document.getElementById("fetchAppointmentsUserId").value;
+
+            try {
+                const response = await fetch(`${appointmentApiUrl}/${userId}`);
+                const appointments = await response.json();
+                const appointmentList = document.getElementById("appointmentList");
+                appointmentList.innerHTML = "";
+
+                appointments.forEach((appointment) => {
+                    const li = document.createElement("li");
+                    li.textContent = `Appointment on ${appointment.appointment} for user ${appointment.user_id}: ${appointment.description}`;
+                    appointmentList.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-svc
+spec:
+  selector:
+    app: notifications-svc
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notifications-svc
+  template:
+    metadata:
+      labels:
+        app: notifications-svc
+    spec:
+      containers:
+      - name: notifications-svc
+        image: notifications-svc-image
+        ports:
+        - containerPort: 8081

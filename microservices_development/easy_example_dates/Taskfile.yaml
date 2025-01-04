@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  default:
+    desc: "Just creates the cluster, nothing else"
+    cmds:
+      - task create_cluster
+  create_cluster:
+    desc: "Create Kind cluster"
+    cmds:
+      - kind create cluster  --config hack/kind/cluster.yaml 
