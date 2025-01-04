@@ -12,7 +12,7 @@ The project will consist of three core microservices:
 ![alt text](image.png)
 
 ## Prerequisites
-- **Tools**: Go, Docker, Helm, Kind, Tilt, kubectl, Task.
+- **Tools**: Go, Docker, Helm, Kind, Tilt, kubectl, Task (optional), dive (optional).
 - **Environment**: Basic knowledge of Kubernetes, Docker, and microservics.
 
 ### How to run it
