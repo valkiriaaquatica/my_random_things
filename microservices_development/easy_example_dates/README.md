@@ -15,7 +15,8 @@ The project will consist of three core microservices:
 ### How to run it
 All is run on default namespace
 ```bash
-git clone 
+git clone https://github.com/valkiriaaquatica/my_random_things.git
+cd my_random_things/microservices_development/easy_example_dates
 tilt up
 ```
 Now check http://localhost:10350/ and Tilt will show up.
