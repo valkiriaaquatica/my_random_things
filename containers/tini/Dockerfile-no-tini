@@ -1,0 +1,3 @@
+FROM alpine:latest 
+RUN apk update
+CMD ["ash", "-c", "sleep 10 & ps -o pid,ppid,comm"]
