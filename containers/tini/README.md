@@ -53,3 +53,6 @@ PID   PPID  COMMAND
 ```
 
 Here, `ps` is PID 1 — it's not a real init system, so **signals and zombie processes are not handled properly**.
+
+**EXTRAS**
+- Tini is also compatibale with podman.
