@@ -1,0 +1,60 @@
+name: This CI is just for act pruposes
+on: 
+  push:
+    branches: 
+      - main
+
+env: 
+  PYTHON_TEST_FILE: test-main.py
+
+jobs:
+  run-different-things-of-act:
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: debug secret 
+        run: echo "Secret -> $TEST_SECRET"
+        env: 
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
+  
+  # nested job
+  run-needs-another:
+    runs-on: ubuntu-latest
+    needs: run-different-things-of-act
+    steps: 
+      - name: debug neded job
+        run: echo "this is just to show the act --graph"
+    
+  # docker things 
+  build-image-one:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Docker image 
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./act-github-actions/Dockerfile
+          push: false
+          tags: test-image-one:0.0.1
+          platforms: linux/amd64
+  
+  # python things
+  test-python-code: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Run python unnit tests
+        run: |
+          python3 -m unittest "$PYTHON_TEST_FILE"
+        working-directory: act-github-actions/python-code
