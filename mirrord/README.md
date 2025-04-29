@@ -1,5 +1,10 @@
 #  MIRRRORD Quickstart in Local development
 
+## REQUIREMENTS
+- Docker
+- Kind https://kind.sigs.k8s.io/docs/user/quick-start/
+- brew install mirrord
+
 ## Test **MIRRORD** development  With `kind`
 
 ```bash
