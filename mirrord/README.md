@@ -6,7 +6,7 @@
 kind create cluster --name mirrord
 docker build -t http-python:0.0.1 .
 kind load docker-image http-python:0.0.1 --name mirrord
-kubectl apply -k manifests-app/manifests-kind/
+kubectl apply -k ../manifests-app/manifests-kind/
 mirrord exec -n mirrord-demo --target deployment/http-python -- python main.py
 ```
 
