@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-python
+  template:
+    metadata:
+      labels:
+        app: http-python
+    spec:
+      containers:
+        - name: http-python
+          image: http-python:0.0.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: "staging"

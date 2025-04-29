@@ -1,0 +1,7 @@
+namespace: mirrord-demo
+
+resources:
+  - ns.yaml
+  - deployment.yaml
+  - svc.yaml
+  - ing.yaml
